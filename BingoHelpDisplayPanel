@@ -1,0 +1,45 @@
+
+
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+
+import javax.swing.JPanel;
+import java.util.*;
+
+public class BingoHelpDisplayPanel extends JPanel
+{
+	
+	public BingoHelpDisplayPanel()	
+	{
+		
+	}
+	
+	public void paint(Graphics g)
+	{
+    
+		g.setColor(new Color(255, 255, 255));
+		g.fillRect(0, 0, 1200, 500);
+
+        g.setColor(new Color(255, 0, 0));
+        Font bingoFont = new Font("Serif", Font.BOLD, 40); 
+        g.setFont(bingoFont);
+        g.drawString("Read Me:", 0, 30);
+        Font bingoFont1 = new Font("Serif", Font.PLAIN, 20); 
+        g.setFont(bingoFont1);
+        g.setColor(new Color(0, 0, 0));
+        g.drawString("Step 1: Fill in all the Control Parameters, if not all the paramaters are filled, there might be unwanted errors.", 0, 70);
+     
+        g.drawString("Step 2: Please press Start Simulation, Print All Bingo Cards, and Show and Save Results", 0, 100);
+        g.drawString("Step 3: Please press Print All Bingo Cards, and Show and Save results(will show the results and also save it to a file.", 0 ,130);
+        
+        g.drawString("To access the generated cards, the ids of the bingo cards that won, and which balls to print on what days in a file, " , 0, 160);
+        g.drawString("please go to the c drive of the computer in which there should be a folder called bingo card. Inside the folder,", 0, 190);
+        g.drawString("there is a file named BingoGameResults.txt which shows the ids of the winning cards and what day to print which balls.", 0, 220);
+        g.drawString("There should also be files named card(number1)-(number2) in which (number1) and (number2) are the respective card numbers.", 0 ,250);
+        g.drawString("For example, card1-4 or card5-8.", 0, 280);
+        g.drawString("To display a different card, re-enter the paramater for the \"pick a bingo card to display\" and press the \"Display Bingo Card\" button again. ", 0, 310);
+        g.drawString("***If not all the winners or balls are shown when the \" Show and Save Results \" button is pressed, please check the file that is saved.", 0, 380);
+	}
+}
