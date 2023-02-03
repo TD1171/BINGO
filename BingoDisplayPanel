@@ -1,0 +1,223 @@
+
+
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+
+import javax.swing.JPanel;
+import java.util.*;
+
+public class BingoDisplayPanel extends JPanel
+{
+	public int MAX_NUM = 75;
+	BingoCard bingoC;    
+	int bingoBallD;
+	int selectionC;
+	int nDays;
+	int bingoBallU;
+	public BingoDisplayPanel(BingoCard bingo, int bingoBallWin,int selectionD,int numDays,int bingoBallUsed)	
+	{
+		bingoC = bingo;
+		bingoBallD = bingoBallWin;
+		selectionC = selectionD;
+		nDays = numDays;
+		bingoBallU = bingoBallUsed;
+	  
+	}
+	
+	public void paint(Graphics g)
+	{
+ //       super.paint(g);
+	 
+		g.setColor(new Color(255, 255, 255));
+		g.fillRect(0, 0, 600, 800);
+		g.setColor(new Color(51, 153, 255));
+        g.fillRect(0, 0, 510, 5);
+        g.fillRect(0,5,5,655);
+        g.fillRect(505, 5, 5, 655);
+        g.fillRect(5,655,500,5);
+        g.setColor(new Color(0, 0, 0));
+        g.drawRect(6, 155, 497, 498);
+        g.drawLine(6, 255, 503, 255);
+        g.drawLine(6, 355, 503, 355);
+        g.drawLine(6, 455, 503, 455);
+        g.drawLine(6, 555, 503, 555);
+        g.drawLine(106, 155, 106, 653);
+        g.drawLine(206, 155, 206, 653);
+        g.drawLine(306, 155, 306, 653);
+        g.drawLine(406, 155, 406, 653);
+        g.setColor(new Color(51, 204, 255));
+        g.fillRect(5, 5, 500, 150);
+        g.setColor(new Color(255, 0, 0));
+        Font bingoFont = new Font("Serif", Font.BOLD, 120); 
+        g.setFont(bingoFont);
+        g.drawString("B", 20, 130);
+        g.drawString("I", 130, 130);
+        g.drawString("N", 205, 130);
+        g.drawString("G", 310, 130);
+        g.drawString("O", 410, 130);
+        g.setColor(new Color(255, 255, 0));
+        g.fillRect(207, 356, 98, 99);
+        g.setColor(new Color(0, 0, 0));
+        Font freeFont = new Font("Plain", Font.BOLD, 36);
+        g.setFont(freeFont);
+        g.drawString("FREE", 209,418);
+        g.drawLine(210, 375, 300, 375);
+        g.drawLine(210, 435, 300, 435);
+        g.drawString("BINGO Card ID: #"+String.valueOf(selectionC), 0,35);
+        Font bingoNumFont = new Font("Plain", Font.BOLD, 84);
+	    System.out.println("   paint: " +selectionC);
+        g.setFont(bingoNumFont);
+
+        if (selectionC != 0) {
+        for (int i=0; i<5; i++)
+        {
+            g.drawString(String.valueOf(bingoC.bCell[i]), 12,235+i*100);
+            if (bingoC.bCellBingo[i] == 0) {
+            	g.setColor(new Color(255, 0, 0));
+            	g.drawString("X", 25,235+i*100);
+            	g.setColor(new Color(0, 0, 0));
+            }
+ 
+        }
+        for (int i=0; i<5; i++)
+        {
+            g.drawString(String.valueOf(bingoC.iCell[i]), 112,235+i*100);
+            if (bingoC.iCellBingo[i] == 0) {
+            	g.setColor(new Color(255, 0, 0));
+            	g.drawString("X", 125,235+i*100);
+            	g.setColor(new Color(0, 0, 0));
+            }
+        }
+        for (int i=0; i<5; i++)
+        {
+        	if(i!=2) {
+        		g.drawString(String.valueOf(bingoC.nCell[i]), 212,235+i*100);
+           		if (bingoC.nCellBingo[i] == 0) {
+        			g.setColor(new Color(255, 0, 0));
+                	g.drawString("X", 225,235+i*100);
+                	g.setColor(new Color(0, 0, 0));
+                }
+        	}
+        }
+        for (int i=0; i<5; i++)
+        {
+            g.drawString(String.valueOf(bingoC.gCell[i]), 312,235+i*100);
+            if (bingoC.gCellBingo[i] == 0) {
+            	g.setColor(new Color(255, 0, 0));
+            	g.drawString("X", 325,235+i*100);
+            	g.setColor(new Color(0, 0, 0));
+            }
+        }
+        for (int i=0; i<5; i++)
+        {
+            g.drawString(String.valueOf(bingoC.oCell[i]), 412,235+i*100);
+            if (bingoC.oCellBingo[i] == 0) {
+            	g.setColor(new Color(255, 0, 0));
+            	g.drawString("X", 425,235+i*100);
+            	g.setColor(new Color(0, 0, 0));
+            } 
+        }
+        }
+        
+		String [] dayTitle = new String[5];	
+		String [] dayBalls = new String[5];
+		int [] amNumBall = new int[5];
+		int [] pmNumBall = new int[5];
+		int ballPerDay =0;
+		int remainderBalls=0;
+		
+		for (int i = 0; i<5; i++)
+    	{
+			amNumBall[i] = 0;
+			pmNumBall[i] = 0;
+    	}
+		if (nDays > 0)
+		{
+			ballPerDay = bingoBallU/(2*nDays);
+			remainderBalls = bingoBallU%(2*nDays);
+		}
+		dayTitle[0] = "Monday";
+		dayTitle[1] = "Tuesday";
+		dayTitle[2] = "Wednesday";
+		dayTitle[3] = "Thursday";
+		dayTitle[4] = "Friday";
+		for (int i = 0; i<nDays; i++)
+    	{
+			if (remainderBalls !=0)
+			{
+				amNumBall[i] = ballPerDay + 1;
+				remainderBalls --;
+			}
+			else
+			{
+				amNumBall[i] = ballPerDay;
+			}
+			if (remainderBalls !=0)
+			{
+				pmNumBall[i] = ballPerDay + 1;
+				remainderBalls --;
+			}
+			else
+			{
+				pmNumBall[i] = ballPerDay;
+			}
+    	}
+        
+		int temp = 0;
+		String whichDay = " ";
+		for (int i = 0; i<nDays; i++)
+    	{
+			temp += amNumBall[i];
+			if ((bingoBallD+1) <= temp)
+			{
+				whichDay = " " +dayTitle[i] + " (AM) ";
+						break;
+			}
+			else
+			{
+				temp += pmNumBall[i];
+				if ((bingoBallD+1) <= temp)
+				{
+					whichDay = " " + dayTitle[i] + " (PM) ";
+						break;
+				}
+			}
+    	}
+		      
+        	g.setColor(new Color(255, 0, 0));
+        	Font bingoBallNumFont = new Font("Plain", Font.BOLD, 20);
+        	g.setFont(bingoBallNumFont);
+        	if (bingoC.winning())
+			{
+        		
+        		if (bingoC.winBy == 'H')
+        		{
+        			g.drawString("This Card is a Horizontal WINNER!!! ", 0,700);
+        		}
+        		else if (bingoC.winBy == 'V')
+        		{
+        			g.drawString("This Card is a Vertical WINNER!!! ", 0,700);
+        		}
+        		else
+        		{
+        			g.drawString("This Card is a Diagonal WINNER!!! ", 0,700);
+        		}
+			
+				g.drawString("WIN at Ball No:", 0,730);
+   
+
+				if (bingoBallD !=0) 
+				{
+        		
+        			g.drawString(String.valueOf(bingoBallD+1)+"."+whichDay, 150,730);
+        		
+				}
+			}
+        	else
+        	{
+        		g.drawString("This Card is NOT A WINNER!!! ", 0,700);
+        	}
+	}
+}
