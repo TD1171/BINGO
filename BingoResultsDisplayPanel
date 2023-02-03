@@ -1,0 +1,175 @@
+
+
+
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+
+import javax.swing.JPanel;
+import java.util.*;
+
+public class BingoResultsDisplayPanel extends JPanel
+{
+	public int MAX_NUM = 75;
+	int totalBallDrawn;    
+	int totalDays;
+	int ballPerDay = 0;
+	int remainderBalls = 0;
+	int [] bingoBallD = new int[MAX_NUM];
+	String [] dayTitle = new String[5];	
+	int [] amNumBall = new int[5];
+	int [] pmNumBall = new int[5];
+	int [] winCard;
+	int [] winOrder;
+	int nWinners;
+	char [] winType;
+	
+	public BingoResultsDisplayPanel(int bingoBallDraw[],int ballDrawn,int nDay,int winBingo[],int winBall[],int numW,char winBy[])	
+	{
+		totalBallDrawn = ballDrawn;
+		bingoBallD = bingoBallDraw;
+		totalDays = nDay;
+		winCard = winBingo;
+		winOrder = winBall;
+		nWinners = numW;
+		winType = winBy;
+		for (int i = 0; i<5; i++)
+    	{
+			amNumBall[i] = 0;
+			pmNumBall[i] = 0;
+    	}
+		if (totalDays > 0)
+		{
+			ballPerDay = totalBallDrawn/(2*totalDays);
+			remainderBalls = totalBallDrawn%(2*totalDays);
+		}
+		dayTitle[0] = "Monday";
+		dayTitle[1] = "Tuesday";
+		dayTitle[2] = "Wednesday";
+		dayTitle[3] = "Thursday";
+		dayTitle[4] = "Friday";
+		for (int i = 0; i<totalDays; i++)
+    	{
+			if (remainderBalls !=0)
+			{
+				amNumBall[i] = ballPerDay + 1;
+				remainderBalls --;
+			}
+			else
+			{
+				amNumBall[i] = ballPerDay;
+			}
+			if (remainderBalls !=0)
+			{
+				pmNumBall[i] = ballPerDay + 1;
+				remainderBalls --;
+			}
+			else
+			{
+				pmNumBall[i] = ballPerDay;
+			}
+    	}
+		
+
+	
+		
+	}
+	
+	public void paint(Graphics g)
+	{
+    
+		
+        g.setColor(new Color(255, 0, 0));
+        Font bingoFont = new Font("Serif", Font.PLAIN, 18); 
+        g.setFont(bingoFont);
+        g.drawString("Bingo Game Simulation Results",150,20);
+        g.setColor(new Color(0, 0, 0));
+        g.drawLine(0, 5, 600, 5);
+        g.drawLine(0, 30, 600, 30);
+        if (totalDays > 0)
+        {
+        	for (int i = 0; i<totalDays; i++)
+        	{
+        		
+        		g.drawString(dayTitle[i],i*100+50,60);
+        		g.drawString(String.valueOf(amNumBall[i])+" balls",i*100+50,110);
+        		g.drawString(String.valueOf(pmNumBall[i])+" balls",i*100+50,160);
+        	}
+        	g.drawLine(0, 80, 600, 80);
+        	g.drawString("AM",5,110);
+        	g.drawLine(0, 130, 600, 130);
+        	g.drawString("PM", 5, 160);
+        	g.drawLine(45, 30, 45, 180);
+        	g.drawLine(0, 180, 600, 180);
+        	int temp = 0;
+        	for (int i = 0; i<totalDays; i++)
+        	{
+        		
+        		g.drawString(dayTitle[i]+" balls:",5,200+i*30);
+        		g.drawString("(AM) ", 150, 200+i*30);
+        		
+        		for (int j = 0; j<(amNumBall[i]); j++)
+        		{
+        			g.drawString(String.valueOf(bingoBallD[j+temp])+",",j*30+200,200+i*30);
+        			
+        		}
+        		temp += amNumBall[i];
+        		g.drawString("(PM) ", 350, 200+i*30);
+        		for (int j = 0; j<(pmNumBall[i]); j++)
+        		{
+        			g.drawString(String.valueOf(bingoBallD[j+temp])+",",j*30+400,200+i*30);
+        			
+        		}
+        		temp += pmNumBall[i];
+        	}
+        	g.drawString("In total, "+String.valueOf(totalBallDrawn)+" balls were drawn.",5,365);
+        	g.drawString("There are "+String.valueOf(nWinners)+" winning Bingo Cards.",5,400);
+        	
+    		for (int ii = 0; ii<nWinners;ii++ )
+        	{
+     
+        			int jj = winCard[winOrder[ii]];
+        			 temp = 0;
+        			String whichDay = " ";
+        			for (int i = 0; i<totalDays; i++)
+        	    	{
+        				temp += amNumBall[i];
+        				if ((jj+1) <= temp)
+        				{
+        					whichDay = " " +dayTitle[i] + " (AM) ";
+        							break;
+        				}
+        				else
+        				{
+        					temp += pmNumBall[i];
+        					if ((jj+1) <= temp)
+        					{
+        						whichDay = " " + dayTitle[i] + " (PM) ";
+        							break;
+        					}
+        				}
+        	    	}
+        			g.drawString("No. "+String.valueOf((ii+1))+": Wining at Bingo Ball No " + (jj+1) + " on "+ whichDay,5,430+ii*50);
+    				
+				
+            		if (winType[winOrder[ii]] == 'H')
+            		{
+            			g.drawString("   Winning Card:  (ID:  " + String.valueOf(winOrder[ii]+1)+")" + "(Horizontal)",5,450+ii*50);
+            		}
+            		else if (winType[winOrder[ii]] == 'V')
+            		{
+            			g.drawString("   Winning Card:  (ID:  " + String.valueOf(winOrder[ii]+1)+")" + "(Vertical)",5,450+ii*50);
+            		}
+            		else
+            		{
+            			g.drawString("   Winning Card:  (ID:  " + String.valueOf(winOrder[ii]+1)+")" + "(Diagonal)",5,450+ii*50);
+            			
+            		}
+	
+    
+
+        	}
+        }
+	}
+}
