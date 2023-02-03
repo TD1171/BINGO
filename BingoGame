@@ -1,0 +1,173 @@
+
+
+import java.util.ArrayList;
+import java.util.Random;
+
+
+public class BingoGame {
+	
+	public int MAX_NUM = 75;
+	public int MAX_CARDS = 10000000;
+	private int gameNumber;
+	private int numberCards;
+	private int numberDays;
+	private int numberWinners;
+    
+    //1. System Parameters
+	//2. Initiate bingoBalls
+	//3. Shuffle bingoBalls
+	//4. instantiate bingoCards
+	//5. Identify winning cards
+  
+	ArrayList<BingoCard> bingoList = new ArrayList<BingoCard>();
+	int [] bingoBall = new int[MAX_NUM];
+	int [] winCard = new int[MAX_CARDS];
+	int [] winOrder = new int[MAX_CARDS];
+	char []  winType= new char[MAX_CARDS];
+	int ballDrawn = 0;
+	
+	public BingoGame(int gameNumber,int numberCards,int numberDays,int numberWinners) 
+	{  
+		this.gameNumber = gameNumber;
+		this.numberCards = numberCards;
+		this.numberDays = numberDays;
+		this.numberWinners = numberWinners;
+		
+
+
+		for(int i=0;i<MAX_NUM;i++)
+		{
+			bingoBall[i] = i+1;
+		}
+		for(int i=0;i<MAX_CARDS;i++)
+		{
+			winCard[i] = 0;
+			winOrder[i] = 0;
+			winType[i] = ' ';
+		}
+		Random rand = new Random(gameNumber);
+    
+    // Start from the last element and swap one by one. We don't
+    // need to run for the first element that's why i > 0
+		for (int i = MAX_NUM-1; i > 0; i--) {
+           
+        // Pick a random index from 0 to i
+			int j = rand.nextInt(i);
+           
+        // Swap bingoBall[i] with the element at random index
+			int temp = bingoBall[i];
+			bingoBall[i] = bingoBall[j];
+			bingoBall[j] = temp;
+        
+		}
+    
+    
+    //  System.out.println(Arrays.toString(bingoBall));
+    
+    int [] bingoValue = new int[25];
+
+	for (int ii = 0; ii < numberCards; ii++) 
+	{   
+	
+		for (int i = 0; i < 5; i++) 
+		{
+			for (int j = 0; j< 5; j++ )
+			{
+				bingoValue[i*5+j] = 0;
+				if (i*5+j!=12) 
+				{
+					bingoValue[i*5+j] = rand.nextInt(15) + 1;
+				}
+				for (int k = 0; k < j; k++) {
+					if (bingoValue[i*5+j] == bingoValue[i*5+k]) {
+						j--;break;
+					}
+				}
+			}
+		}	
+		BingoCard bingo=new BingoCard();
+		bingo.setValue(bingoValue);
+		bingoList.add(bingo);
+	  }    
+	  ballDrawn = drawWinningCards();
+	}
+	public int drawWinningCards()
+	{
+
+	// Draw BingBalls
+		
+		int totalWinCard = 0;
+		int ballNo = 0;
+		while (totalWinCard<numberWinners)
+		{
+			for (int ii = 0; ii<numberCards;ii++ )
+			{
+				if (winCard[ii] == 0)
+				{
+					BingoCard bingo = bingoList.get(ii);
+					bingo.markBall(bingoBall[ballNo]);
+					if (ballNo>4)
+					{
+						if (bingo.winning())
+						{
+							winOrder[totalWinCard] = ii;
+							winCard[ii] = ballNo;
+							totalWinCard +=1;
+
+						};
+					}
+				}
+				if (totalWinCard == numberWinners) 
+				{
+					break;
+				}
+			}
+			if (totalWinCard < numberWinners) ballNo++;
+    }
+    System.out.println("-------- Total Balls Drawn----------- :" + (ballNo+1));
+    return ballNo+1;
+	
+   }//end of public
+	
+	public void printAllCards()
+	{
+		for (int ii = 0; ii<numberCards;ii++ )
+    	{
+    			BingoCard bingo = bingoList.get(ii);
+    			bingo.printCard();
+    	}
+	}
+	
+    public ArrayList<BingoCard> getAllCards()
+    {
+    	return bingoList;
+    }
+    
+    public int [] getBingoBalls()
+    {
+    	return bingoBall;
+    }
+    public int [] getWinCards()
+    {
+    	return winCard;
+    }
+    public int [] getWinOrder()
+    {
+    	return winOrder;
+    }
+    public int getBallDrawn()
+    {
+    	return ballDrawn;
+    }
+    public char [] getWinType()
+    {
+    	for (int ii = 0; ii<numberCards;ii++ )
+		{
+			
+				BingoCard bingo = bingoList.get(ii);
+				winType[ii] = bingo.winBy;
+			
+		}
+    	return winType;
+    }
+}//end of class
