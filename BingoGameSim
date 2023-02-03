@@ -1,0 +1,380 @@
+
+
+import java.util.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+
+import java.io.PrintStream;
+
+import javax.swing.text.BadLocationException;
+import java.awt.image.BufferedImage;
+
+
+public class BingoGameSim extends JFrame {
+	
+	
+	int gNumber = 0;
+	int nCards = 0;
+	int nDays = 0;
+	int nWinners = 0;
+	int cardNo = 0;
+	
+	private JTextField inputGameNumber = new JTextField();
+	private JTextField inputNumCards = new JTextField();
+	private JTextField inputNumDays = new JTextField();
+	private JTextField inputNumWinners = new JTextField();
+	private JTextField inputCardNo = new JTextField();
+	
+	private JButton jbtBingoSim = new JButton("Start Simulation");
+	private JButton jbtBingoPrint = new JButton("Print All Bingo Cards");
+	private JButton jbtBingoShow = new JButton("Show and Save Results");
+	private JButton jbtBingoSelect = new JButton("Display Bingo Card");
+	private JButton jbtBingoHelp = new JButton("How to use");
+	
+	ArrayList<BingoCard> bingoList = new ArrayList<BingoCard>();
+	int bingoBall[];
+	int winCard[];
+	int winOrder[];
+	char winType[];
+	int bingoBallWin = 0;
+	int selection = 0;
+	int bingoBallDrawn;
+	int inputDataValid = 1;
+	int simRunDone = 0;
+	
+	
+	JPanel p1 = new JPanel(new GridLayout(5,2));
+	JPanel p2 = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+	BingoCard bingoC;
+
+	JFrame bingoCardFrame= new JFrame("Bingo Card Display");
+	
+	
+	public BingoGameSim()
+	{
+		
+		 
+		p1.add(new JLabel("Game Number ") );
+		p1.add(inputGameNumber);
+		p1.add(new JLabel("Number of Cards ") );
+		p1.add(inputNumCards);
+		p1.add(new JLabel("Number of Days (1-5)") );
+		p1.add(inputNumDays);
+		p1.add(new JLabel("Number of Winners ") );
+		p1.add(inputNumWinners);
+		p1.add(new JLabel("Pick a Bingo Card to Display ") );
+		p1.add(inputCardNo);
+		p1.setBorder(new TitledBorder("Enter Bingo Game Control Parameters"));
+		
+
+		p2.add(jbtBingoSim);
+		p2.add(jbtBingoPrint);
+		p2.add(jbtBingoShow);
+		p2.add(jbtBingoSelect);
+		p2.add(jbtBingoHelp);
+		
+	
+		
+		add(p1,BorderLayout.NORTH);
+		add(p2,BorderLayout.SOUTH);
+		
+
+//		
+		jbtBingoSim.addActionListener(new SimButtonListener());
+		jbtBingoPrint.addActionListener(new PrintButtonListener());
+		jbtBingoShow.addActionListener(new ShowButtonListener());
+		jbtBingoSelect.addActionListener(new SelectButtonListener());
+		jbtBingoHelp.addActionListener(new HelpButtonListener());
+		
+	}
+	
+	private class SimButtonListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			inputDataValid = 1;
+			gNumber = Integer.parseInt(inputGameNumber.getText());
+			nCards = Integer.parseInt(inputNumCards.getText());
+			nDays = Integer.parseInt(inputNumDays.getText());
+			nWinners = Integer.parseInt(inputNumWinners.getText());
+			cardNo = Integer.parseInt(inputCardNo.getText());
+			
+			if (gNumber>100000 )inputDataValid = 0;
+			if (nCards <1 || nCards>100000 )inputDataValid = 0;
+			if (nDays <1 || nDays>5 )inputDataValid = 0;
+			if (nWinners <1 || nWinners>nCards )inputDataValid = 0;
+			
+			if(inputDataValid == 1)
+			{
+				BingoGame bingoGame = new BingoGame(gNumber,nCards,nDays,nWinners);
+				bingoList = bingoGame.getAllCards();
+				bingoBall = bingoGame.getBingoBalls();
+				winCard = bingoGame.getWinCards();
+				winOrder = bingoGame.getWinOrder();
+				winType = bingoGame.getWinType();
+				bingoBallDrawn = bingoGame.getBallDrawn();
+				
+				simRunDone =1;
+			}
+		}
+	}
+	private class PrintButtonListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			if (simRunDone == 1) {
+			for (int ii = 0; ii<bingoList.size();ii++ )
+	    	{
+	    			BingoCard bingo = bingoList.get(ii);
+	    			System.out.println("Bingo Card: (ID:  " + (ii+1) +")" );
+	    			bingo.printCard();
+	    	}
+			for (int jj = 0; jj<bingoBall.length; jj++)
+			{
+				System.out.println("Bingo Ball  " + (jj+1) + ": "+bingoBall[jj]);
+			}
+			System.out.println("--------WINNING CARDS-----------");
+			for (int ii = 0; ii<nWinners;ii++ )
+	    	{
+	    			BingoCard bingo = bingoList.get(winOrder[ii]);
+	    			int jj = winCard[winOrder[ii]];
+	    			{
+	    				System.out.println("Wining at Bingo Ball  " + (jj+1));
+	    				System.out.println("Winning Card:  (ID:  " + (winOrder[ii]+1)+")");
+	    				bingo.printCard();
+	    			}
+	    	}
+			
+			   BufferedImage image = new BufferedImage(1100, 1350, 2);
+			    Graphics graphics = image.getGraphics();
+			    BingoPrintAllCards obj = new BingoPrintAllCards(nCards,bingoList);
+			    obj.paint(graphics);
+			}
+		}
+	}
+	private class SelectButtonListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e) 
+		{
+
+			if (simRunDone == 1) {
+				bingoCardFrame.getContentPane().removeAll();
+				bingoCardFrame.getContentPane().invalidate();
+			bingoCardFrame.setSize(600, 800);
+			bingoCardFrame.setVisible(true);
+			bingoCardFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			cardNo = Integer.parseInt(inputCardNo.getText());
+			if (cardNo >=1 && cardNo <=nCards) {
+				selection = cardNo;
+				bingoC = bingoList.get(selection-1);
+				bingoBallWin = winCard[selection-1];
+				System.out.println("pCard: "+selection);
+				JPanel pCard = new BingoDisplayPanel(bingoC,bingoBallWin,selection,nDays,bingoBallDrawn);	
+             
+				bingoCardFrame.add(pCard);
+				bingoCardFrame.getContentPane().validate();
+
+				}
+			}
+		}
+	}
+
+	private class ShowButtonListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e) 
+		{
+			if (simRunDone == 1) {
+			java.io.PrintWriter output = null;
+			try {
+				File cardResultFile = new File("C:\\BingoCard\\BingoGameResults.txt");
+				output = new java.io.PrintWriter(cardResultFile);
+			}
+			catch(java.io.IOException ex) {
+				ex.printStackTrace();
+			}
+			
+
+			String [] dayTitle = new String[5];	
+			String [] dayBalls = new String[5];
+			int [] amNumBall = new int[5];
+			int [] pmNumBall = new int[5];
+			int ballPerDay =0;
+			int remainderBalls=0;
+			
+			for (int i = 0; i<5; i++)
+	    	{
+				amNumBall[i] = 0;
+				pmNumBall[i] = 0;
+	    	}
+			if (nDays > 0)
+			{
+				ballPerDay = bingoBallDrawn/(2*nDays);
+				remainderBalls = bingoBallDrawn%(2*nDays);
+			}
+			dayTitle[0] = "Monday";
+			dayTitle[1] = "Tuesday";
+			dayTitle[2] = "Wednesday";
+			dayTitle[3] = "Thursday";
+			dayTitle[4] = "Friday";
+			for (int i = 0; i<nDays; i++)
+	    	{
+				if (remainderBalls !=0)
+				{
+					amNumBall[i] = ballPerDay + 1;
+					remainderBalls --;
+				}
+				else
+				{
+					amNumBall[i] = ballPerDay;
+				}
+				if (remainderBalls !=0)
+				{
+					pmNumBall[i] = ballPerDay + 1;
+					remainderBalls --;
+				}
+				else
+				{
+					pmNumBall[i] = ballPerDay;
+				}
+	    	}
+			String titleDays = "     ";
+			String amTitle = "AM  ";
+			String pmTitle = "PM  ";
+			
+			for (int jj =0;jj<nDays;jj++)
+			{
+				titleDays += dayTitle[jj];
+				titleDays +="   ";
+				amTitle += String.valueOf(amNumBall[jj]);
+				amTitle += " balls    ";
+				pmTitle += String.valueOf(pmNumBall[jj]);
+				pmTitle += " balls    ";
+			}
+			output.println(titleDays);
+			output.println("------------------------------------------------------------------------");
+			output.println(amTitle);
+			output.println(pmTitle);
+			output.println("------------------------------------------------------------------------");
+			int temp = 0;
+			for (int i = 0; i<nDays; i++)
+	    	{
+				dayBalls[i] = dayTitle[i] +" balls:   (AM) ";
+				for (int jj =0;jj<amNumBall[i];jj++)
+				{
+					dayBalls[i] += String.valueOf(bingoBall[jj+temp]);
+					dayBalls[i] +=", ";
+				}
+				temp  += amNumBall[i];
+				dayBalls[i] += "  (PM) ";
+				for (int jj =0;jj<pmNumBall[i];jj++)
+				{
+					dayBalls[i] += String.valueOf(bingoBall[jj+temp]);
+					dayBalls[i] +=", ";
+				}
+				temp  += pmNumBall[i];
+				output.println(dayBalls[i]);
+	    	}
+			
+			output.println("------------------------------------------------------------------------");
+
+			output.println("In total "+ String.valueOf(bingoBallDrawn) + " Bingo Ball were drawn.");
+	
+			output.println("--------WINNING CARDS-----------");
+			
+			for (int ii = 0; ii<nWinners;ii++ )
+	    	{
+	    			BingoCard bingo = bingoList.get(winOrder[ii]);
+	    			int jj = winCard[winOrder[ii]];
+	    			temp = 0;
+	    			String whichDay = " ";
+	    			for (int i = 0; i<nDays; i++)
+	    	    	{
+	    				temp += amNumBall[i];
+	    				if ((jj+1) <= temp)
+	    				{
+	    					whichDay = " " +dayTitle[i] + " (AM) ";
+	    							break;
+	    				}
+	    				else
+	    				{
+	    					temp += pmNumBall[i];
+	    					if ((jj+1) <= temp)
+	    					{
+	    						whichDay = " " + dayTitle[i] + " (PM) ";
+	    							break;
+	    					}
+	    				}
+	    	    	}
+	    			
+	    				output.println("No. "+String.valueOf((ii+1))+": Wining at Bingo Ball No " + (jj+1) + " on "+ whichDay);
+	    				
+	    				
+	            		if (bingo.winBy == 'H')
+	            		{
+	            			output.println("   Winning Card:  (ID:  " + (winOrder[ii]+1)+")" + "(Horizontal)");
+	            		}
+	            		else if (bingo.winBy == 'V')
+	            		{
+	            			output.println("   Winning Card:  (ID:  " + (winOrder[ii]+1)+")" + "(Vertical)");
+	            		}
+	            		else
+	            		{
+	            			output.println("   Winning Card:  (ID:  " + (winOrder[ii]+1)+")" + "(Diagonal)");
+	            		}
+
+
+	    	}
+			
+			output.close();
+			JFrame simFrame= new JFrame("Bingo Game Simulation Results");
+			simFrame.setSize(600, 800);
+			simFrame.setVisible(true);
+			simFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
+			JPanel simResults= new BingoResultsDisplayPanel(bingoBall,bingoBallDrawn,nDays,winCard,winOrder,nWinners,winType);
+	
+			simFrame.add(simResults);
+
+		}
+		}
+		
+	}
+
+	private class HelpButtonListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e) 
+		{
+			
+			JFrame helpFrame= new JFrame("Bingo Game Help");
+			helpFrame.setSize(1200, 500);
+			helpFrame.setVisible(true);
+			helpFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
+			JPanel helpPanel= new BingoHelpDisplayPanel();
+	
+			helpFrame.add(helpPanel);
+
+		}
+		
+	}
+	
+	public static void main(String[] args) {
+	     
+ 
+        BingoGameSim frame = new BingoGameSim();
+        
+        frame.pack();
+        frame.setTitle("Bingo Game Simulator");
+        
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+	}
+}//end of class
+	
