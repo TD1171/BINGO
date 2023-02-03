@@ -1,0 +1,209 @@
+
+
+
+import java.util.*;
+
+public class BingoCard {
+
+	int [] bCell = new int[5];
+	int [] bCellBingo = new int[5];
+	int [] iCell = new int[5];
+	int [] iCellBingo = new int[5];
+	int [] nCell = new int[5];
+	int [] nCellBingo = new int[5];
+	int [] gCell = new int[5];
+	int [] gCellBingo = new int[5];
+	int [] oCell = new int[5];
+	int [] oCellBingo = new int[5];
+	char winBy = ' ';
+	public BingoCard () {
+		
+		for (int i =0; i<5; i++) 
+		{
+			bCell[i] = 0;bCellBingo[i] = 1;
+			iCell[i] = 0;iCellBingo[i] = 1;
+			nCell[i] = 0;nCellBingo[i] = 1;
+			gCell[i] = 0;gCellBingo[i] = 1;
+			oCell[i] = 0;oCellBingo[i] = 1;
+		}
+		nCellBingo[2] = 0;
+	}
+	
+    public void setValue(int [] bValue)
+    {
+    	for (int i =0; i<5; i++) 
+		{
+			bCell[i] = bValue[i];
+			iCell[i] = bValue[5+i] + 15;
+			nCell[i] = bValue[10+i] + 30;
+			gCell[i] = bValue[15+i] + 45;
+			oCell[i] = bValue[20+i] + 60;
+		}
+    	nCell[2] = 0;
+    }
+    
+    public void markBall(int ball)
+    {
+    	if (ball <=15)
+    	{
+    		for (int i=0;i<5;i++)
+    		{
+    			if (bCell[i] == ball)
+    			{
+    				bCellBingo[i] = 0;
+    				break;
+    			}
+    		}
+    	}
+    	else if (ball <=30 && ball >15)
+    	{
+    		for (int i=0;i<5;i++)
+    		{
+    			if (iCell[i] == ball)
+    			{
+    				iCellBingo[i] = 0;
+    				break;
+    			}
+    		}
+    	}
+    	else if (ball <=45 && ball >30)
+    	{
+    		for (int i=0;i<5;i++)
+    		{
+    			if (nCell[i] == ball)
+    			{
+    				nCellBingo[i] = 0;
+    				break;
+    			}
+    		}
+    	}
+    	else if (ball <=60 && ball >45)
+    	{
+    		for (int i=0;i<5;i++)
+    		{
+    			if (gCell[i] == ball)
+    			{
+    				gCellBingo[i] = 0;
+    				break;
+    			}
+    		}
+    	}  	
+    	else if (ball <=75 && ball >60)
+    	{
+    		for (int i=0;i<5;i++)
+    		{
+    			if (oCell[i] == ball)
+    			{
+    				oCellBingo[i] = 0;
+    				break;
+    			}
+    		}
+    	}
+       	
+    }
+    
+    public boolean winning()
+    {
+    	int winningSumB = 0;
+    	int winningSumI = 0;
+    	int winningSumN = 0;
+    	int winningSumG = 0;
+    	int winningSumO = 0;
+    	int winningSum1 = 0;
+    	int winningSum2 = 0;
+    	int winningSum3 = 0;
+    	int winningSum4 = 0;
+    	int winningSum5 = 0;  	
+    	int winningSumD1 = 0;
+    	int winningSumD2 = 0;
+    	for (int i =0; i<5; i++)
+    	{
+    		winningSumB += bCellBingo[i];  
+    		winningSumI += iCellBingo[i]; 
+    		winningSumN += nCellBingo[i]; 
+    		winningSumG += gCellBingo[i]; 
+    		winningSumO += oCellBingo[i]; 
+    	}
+    	winningSum1 = bCellBingo[0]+iCellBingo[0]+nCellBingo[0]+gCellBingo[0]+oCellBingo[0];
+    	winningSum2 = bCellBingo[1]+iCellBingo[1]+nCellBingo[1]+gCellBingo[1]+oCellBingo[1];
+    	winningSum3 = bCellBingo[2]+iCellBingo[2]+nCellBingo[2]+gCellBingo[2]+oCellBingo[2];  
+    	winningSum4 = bCellBingo[3]+iCellBingo[3]+nCellBingo[3]+gCellBingo[3]+oCellBingo[3];
+    	winningSum5 = bCellBingo[4]+iCellBingo[4]+nCellBingo[4]+gCellBingo[4]+oCellBingo[4];
+    	winningSumD1 = bCellBingo[0]+iCellBingo[1]+nCellBingo[2]+gCellBingo[3]+oCellBingo[4];
+    	winningSumD2 = bCellBingo[4]+iCellBingo[3]+nCellBingo[2]+gCellBingo[1]+oCellBingo[0];
+    	if (winningSumB == 0)
+    	{
+    		winBy = 'V';
+    		return true;
+    	}
+    	else if (winningSumI == 0)
+    	{
+    		winBy = 'V';return true;
+    	}
+    	else if (winningSumN == 0)
+    	{
+    		winBy = 'V';return true;
+    	}
+    	else if (winningSumG == 0)
+    	{
+    		winBy = 'V';return true;
+    	}
+    	else if (winningSumO == 0)
+    	{
+    		winBy = 'V';return true;
+    	}
+    	else if (winningSum1 == 0)
+    	{
+    		winBy = 'H';return true;
+    	}
+    	else if (winningSum2 == 0)
+    	{
+    		winBy = 'H';return true;
+    	}
+    	else if (winningSum3 == 0)
+    	{
+    		winBy = 'H';return true;
+    	}
+    	else if (winningSum4 == 0)
+    	{
+    		winBy = 'H';return true;
+    	}
+    	else if (winningSum5 == 0)
+    	{
+    		winBy = 'H';return true;
+    	}
+    	else if (winningSumD1 == 0)
+    	{
+    		winBy = 'D';return true;
+    	}
+       	else if (winningSumD2 == 0)
+    	{
+       		winBy = 'D';return true;
+    	}
+    	else
+    	{
+    		return false;
+    	}
+    }
+    
+    public void printCard()
+    {
+    	System.out.println("--------------------------");
+    	System.out.println("|  B |  I |  N |  G |  O |");
+    	System.out.println("--------------------------");
+    	for (int i =0; i<5; i++)
+    	{
+    		if (i !=2)
+    		{
+    			System.out.format("|"+"%4d"+"|"+"%4d"+"|"+"%4d"+"|"+"%4d"+"|"+"%4d"+"|"+"%n", bCell[i],iCell[i],nCell[i],gCell[i],oCell[i]);
+    		}
+    		else
+    		{
+    			System.out.format("|"+"%4d"+"|"+"%4d"+"|"+"FREE"+"|"+"%4d"+"|"+"%4d"+"|"+"%n", bCell[i],iCell[i],gCell[i],oCell[i]);
+    		}
+
+    	}
+    	System.out.println("--------------------------");
+    }
+    
+}
